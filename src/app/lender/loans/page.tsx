@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useAuth } from "@/components/auth-context"
-import { LenderSidebar } from "@/components/lender/lender-sidebar"
 import {
   Search,
   Filter,
@@ -93,7 +92,6 @@ export default function LenderLoansPage() {
   const [activateFirstPaymentDate, setActivateFirstPaymentDate] = useState("")
   const [loanToActivate, setLoanToActivate] = useState<Loan | null>(null)
 
-  // Add these state hooks at the top of your component:
   const [showUpdateModal, setShowUpdateModal] = useState(false)
   const [selectedApp, setSelectedApp] = useState<Loan | null>(null)
 

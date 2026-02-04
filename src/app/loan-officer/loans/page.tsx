@@ -86,6 +86,9 @@ export default function LenderLoansPage() {
   const [activateFirstPaymentDate, setActivateFirstPaymentDate] = useState("")
   const [updating, setUpdating] = useState(false)
 
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
+
   useEffect(() => {
     if (!authenticated && !authLoading) {
       router.push("/")
@@ -191,6 +194,9 @@ export default function LenderLoansPage() {
         return matchesSearch && matchesStatus && matchesType
       })
     : []
+
+  const totalPages = Math.ceil(filteredLoans.length / itemsPerPage)
+  const paginatedLoans = filteredLoans.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   const stats = {
     total: loans.length,
@@ -398,7 +404,7 @@ export default function LenderLoansPage() {
 
           {/* Loans List */}
           <div className="space-y-4">
-            {filteredLoans.length === 0 ? (
+            {paginatedLoans.length === 0 ? (
               <Card className="p-8">
                 <div className="text-center">
                   <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -411,7 +417,7 @@ export default function LenderLoansPage() {
                 </div>
               </Card>
             ) : (
-              filteredLoans.map((loan) => (
+              paginatedLoans.map((loan) => (
                 <Card key={loan.id} className="p-4 sm:p-6 hover:shadow-md transition-shadow">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="space-y-3 flex-1 min-w-0">
@@ -514,6 +520,27 @@ export default function LenderLoansPage() {
                   </div>
                 </Card>
               ))
+            )}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-4">
+                <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}>
+                  Previous
+                </Button>
+
+                <span className="text-sm">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                >
+                  Next
+                </Button>
+              </div>
             )}
           </div>
         </main>
