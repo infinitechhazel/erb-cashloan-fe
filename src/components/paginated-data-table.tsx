@@ -71,7 +71,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {searchFields && (
+      {searchPlaceholder && (
         <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
