@@ -80,10 +80,10 @@ export default function LoansPage() {
     )
   }
 
-  if (!authenticated) {
-    router.push("/")
-    return null
-  }
+  // if (!authenticated) {
+  //   router.push("/")
+  //   return null
+  // }
 
   const handleApplicationSuccess = () => {
     setRefreshKey((prev) => prev + 1)

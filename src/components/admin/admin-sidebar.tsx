@@ -13,7 +13,7 @@ const navigation = [
     href: "/dashboard",
     icon: LayoutDashboard,
   },
-    {
+  {
     name: "Loans",
     href: "/admin/loans",
     icon: FileText,
@@ -72,8 +72,8 @@ export function AdminSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen transition-transform bg-card border-r border-border",
-          "w-64 lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-screen transition-transform bg-card border-r border-border",
+          "w-64 -translate-x-full lg:translate-x-0 ",
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >

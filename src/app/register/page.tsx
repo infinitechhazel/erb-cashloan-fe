@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -54,24 +55,44 @@ export default function RegisterPage() {
           lastName: formData.lastName,
           email: formData.email,
           password: formData.password,
-          confirmPassword: formData.confirmPassword, // ✅ Send confirmPassword
+          confirmPassword: formData.confirmPassword, // ✅ Match API route expectation
         }),
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
 
-      // Store auth data
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // Redirect to dashboard
-      router.push('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      toast({
+        variant: "default",
+        title: "Account Created!",
+        description: "Registration successful. Redirecting to login...",
+        duration: 2000,
+      });
+
+      // Clear form
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+
+      // Redirect to login page after successful registration
+      setTimeout(() => {
+        router.push('/login');
+      }, 2000);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.';
+      setError(errorMessage);
+      toast({
+        variant: "destructive",
+        title: "Registration Failed",
+        description: errorMessage,
+      });
     } finally {
       setLoading(false);
     }

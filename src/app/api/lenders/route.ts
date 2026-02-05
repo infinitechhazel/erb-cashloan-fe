@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from 'next/headers';
 
 export async function GET(request: NextRequest) {
   try {
-    // Extract Authorization header
-    const authHeader = request.headers.get("Authorization");
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      console.error("[Next.js] Missing or invalid Authorization header");
-      return NextResponse.json({ message: "Unauthorized - No valid token provided" }, { status: 401 });
-    }
+    // Get token from HTTP-only cookie
+    const cookieStore = await cookies()
+    const token = cookieStore.get('token')?.value
 
-    const token = authHeader.replace("Bearer ", "");
-    console.log("[Next.js] Token received, length:", token.length);
+    if (!token) {
+      return NextResponse.json(
+        { success: false, message: `Not authenticated. Please log in again. ${cookieStore.get('token')?.value}` },
+        { status: 401 }
+      );
+    }
 
     // Only allow admin users
     const laravelUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -24,8 +26,9 @@ export async function GET(request: NextRequest) {
     const response = await fetch(url.toString(), {
       method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
+        "Accept": "application/json",
+        "Authorization": `Bearer ${token}`,
+        "X-Requested-With": "XMLHttpRequest",
       },
     });
 

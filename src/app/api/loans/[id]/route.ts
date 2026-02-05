@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Await params in Next.js 15+
-    const { id } = await params;
+    const params = await context.params
+    const { id } = params
 
     const authHeader = request.headers.get('Authorization');
     const token = authHeader?.replace('Bearer ', '');
@@ -35,14 +36,14 @@ export async function GET(
     if (!response.ok) {
       // Try to parse as JSON, but handle HTML error responses
       let errorMessage = 'Failed to fetch loan';
-      
+
       try {
         const errorData = JSON.parse(responseText);
         errorMessage = errorData.message || errorMessage;
       } catch (e) {
         // If it's HTML, extract useful info from status
         console.error('[v0] Laravel returned HTML error:', responseText.substring(0, 500));
-        
+
         if (response.status === 404) {
           errorMessage = 'Loan not found';
         } else if (response.status === 403) {
@@ -116,14 +117,14 @@ export async function PUT(
     if (!response.ok) {
       // Try to parse as JSON, but handle HTML error responses
       let errorMessage = 'Failed to update loan';
-      
+
       try {
         const errorData = JSON.parse(responseText);
         errorMessage = errorData.message || errorMessage;
       } catch (e) {
         // If it's HTML, extract useful info from status
         console.error('[v0] Laravel returned HTML error:', responseText.substring(0, 500));
-        
+
         if (response.status === 404) {
           errorMessage = 'Loan not found';
         } else if (response.status === 403) {
