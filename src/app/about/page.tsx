@@ -4,7 +4,7 @@ import { Check, Plus, Minus, ChevronRight, Badge, Clock, Percent, ShieldCheck, C
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 
-export default function HomePage() {
+export default function AboutPage() {
 
     return (
         <main className="min-h-screen bg-white">
@@ -13,7 +13,7 @@ export default function HomePage() {
             {/* Hero Section*/}
             <section className="bg-linear-to-r from-cyan-950 to-blue-900">
                 <div className="flex gap-2">
-                    <div className="text-center py-16 mx-auto">
+                    <div className="text-center py-16 px-6 mx-auto">
                         <div className="flex flex-col justify-center">
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                                 About Loan Hub

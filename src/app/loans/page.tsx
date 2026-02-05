@@ -9,28 +9,7 @@ import { Check, Plus, Minus, ChevronRight, Badge, Clock, Percent, ShieldCheck, C
 import { Navbar } from '@/components/navbar';
 import { Footer } from '@/components/footer';
 
-export default function HomePage() {
-    const [loanAmount, setLoanAmount] = useState(30000);
-    const [loanTerm, setLoanTerm] = useState(24);
-    const interestRate = 12;
-    const processingFeeRate = 0.02; // 2% processing fee
-    const processingFee = Math.round(loanAmount * processingFeeRate);
-
-    const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanTerm);
-    const disbursedAmount = loanAmount - processingFee;
-
-    function calculateMonthlyPayment(principal: number, rate: number, months: number) {
-        const monthlyRate = rate / 100 / 12;
-        if (monthlyRate === 0) return principal / months;
-        return (principal * (monthlyRate * Math.pow(1 + monthlyRate, months))) / (Math.pow(1 + monthlyRate, months) - 1);
-    }
-
-    const handleAmountChange = (value: number) => {
-        const newAmount = Math.max(5000, Math.min(5000000, value));
-        setLoanAmount(newAmount);
-    };
-
-    const termOptions = [6, 9, 12, 18, 24, 30, 36, 45, 48, 60];
+export default function LoanPage() {
 
     return (
         <main className="min-h-screen bg-white">
@@ -39,7 +18,7 @@ export default function HomePage() {
             {/* Hero Section*/}
             <section className="bg-linear-to-r from-cyan-950 to-blue-900">
                 <div className="flex gap-2">
-                    <div className="text-center py-16 mx-auto">
+                    <div className="text-center py-16 px-6 mx-auto">
                         <div className="flex flex-col justify-center">
                             <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
                                 Find the Perfect Loan For You
@@ -54,17 +33,17 @@ export default function HomePage() {
             {/* Loan Plans */}
             <section className="max-w-5xl mx-auto px-6 py-16">
                 <div className="text-center">
-                    <h1 className="text-3xl font-semibold">Our Loan Products</h1>
+                    <h1 className="text-3xl font-semibold">Our Loan Plans</h1>
                     <p>Explore our range of loan options tailored for different needs</p>
                 </div>
 
                 <div className="mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <Card className="p-6 border-2 border-emerald-400">
+                    <Card className="p-6 border-2 border-emerald-400 gap-3">
                         <div className="flex justify-between items-center">
                             <h2 className="text-2xl font-bold">Personal Loan</h2>
                             <p className="w-24 h-5 bg-emerald-500 text-white rounded-full text-xs flex items-center justify-center">Most Popular</p>
                         </div>
-                        <p className="text-justify md:text-start">Ideal for personal expenses, debt consolidation or unexpected costs.</p>
+                        <p className="text-start">Ideal for personal expenses, debt consolidation or unexpected costs.</p>
                         <div className="flex justify-between max-w-sm">
                             <div>
                                 <h3 className="text-md lg:text-lg text-gray-600">Loan Amount</h3>
@@ -84,9 +63,9 @@ export default function HomePage() {
                         <Button className="bg-emerald-500 text-white hover:bg-emerald-400 rounded-md px-6">Apply Now <ChevronRight /></Button>
                     </Card>
 
-                    <Card className="p-6">
+                    <Card className="p-6 gap-3">
                         <h2 className="text-2xl font-bold">Calamity Loan</h2>
-                        <p className="text-justify md:text-start">Designed to help from natural disasters and unforeseen emergencies.</p>
+                        <p className="text-start">Designed to help from natural disasters and unforeseen emergencies.</p>
                         <div className="flex justify-between max-w-sm">
                             <div>
                                 <h3 className="text-md lg:text-lg text-gray-600">Loan Amount</h3>
@@ -106,9 +85,9 @@ export default function HomePage() {
                         <Button className="bg-emerald-500 text-white hover:bg-emerald-400 rounded-md px-6">Apply Now <ChevronRight /></Button>
                     </Card>
 
-                    <Card className="p-6">
+                    <Card className="p-6 gap-3">
                         <h2 className="text-2xl font-bold">Emergency Loan</h2>
-                        <p className="text-justify md:text-start">Fast cash when you need it most.</p>
+                        <p className="text-start">Fast cash when you need it most.</p>
                         <div className="flex justify-between max-w-sm">
                             <div>
                                 <h3 className="text-md lg:text-lg text-gray-600">Loan Amount</h3>
@@ -128,9 +107,9 @@ export default function HomePage() {
                         <Button className="bg-emerald-500 text-white hover:bg-emerald-400 rounded-md px-6">Apply Now <ChevronRight /></Button>
                     </Card>
 
-                    <Card className="p-6">
+                    <Card className="p-6 gap-3">
                         <h2 className="text-2xl font-bold">Business Loan</h2>
-                        <p className="text-justify md:text-start">Fuel your business growth.</p>
+                        <p className="text-start">Fuel your business growth.</p>
                         <div className="flex justify-between max-w-sm">
                             <div>
                                 <h3 className="text-md lg:text-lg text-gray-600">Loan Amount</h3>
