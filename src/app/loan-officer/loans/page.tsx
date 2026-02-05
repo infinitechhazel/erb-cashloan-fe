@@ -39,28 +39,43 @@ interface Loan {
   id: number
   loan_number: string
   type: string
-  amount: string
-  principal_amount?: string
+  principal_amount: string
+  approved_amount?: string
   interest_rate: string
-  term_months: number
-  total_amount?: string
-  outstanding_balance?: string
   status: string
+  term_months?: number
   purpose?: string
   created_at: string
   approved_at?: string
-  disbursement_date?: string
-  borrower: {
+  updated_at: string
+  start_date?: string
+  first_payment_date?: string
+  notes?: string
+  rejection_reason?: string
+  outstanding_balance?: string
+  employment_status?: string
+  borrower?: {
+    first_name: string
+    last_name: string
+    email?: string
+  }
+  lender?: {
     id: number
     first_name: string
     last_name: string
-    name?: string
-    email: string
+    email?: string
+  }
+  loan_officer?: {
+    first_name: string
+    last_name: string
+    email?: string
   }
   documents?: Array<{
     id: number
-    document_type: string
-    file_name: string
+    name?: string
+    file_name?: string
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [key: string]: any
   }>
 }
 
@@ -152,7 +167,6 @@ export default function LenderLoansPage() {
   // Helper function to get borrower name
   const getBorrowerName = (borrower: Loan["borrower"]): string => {
     if (!borrower) return "N/A"
-    if (borrower.name) return borrower.name
     const firstName = borrower.first_name || ""
     const lastName = borrower.last_name || ""
     return `${firstName} ${lastName}`.trim() || "N/A"
@@ -267,8 +281,7 @@ export default function LenderLoansPage() {
       const data = await response.json()
 
       // update local list
-      setLoans((prev) => prev.map((l) => (l.id === selectedLoan.id ? data.loan : l)))
-
+      fetchLoans()
       setShowUpdateModal(false)
       setSelectedLoan(null)
     } catch (err) {
@@ -444,7 +457,10 @@ export default function LenderLoansPage() {
                           <div>
                             <p className="text-muted-foreground text-xs">Amount</p>
                             <p className="font-medium">
-                              ₱{loan.amount ? parseFloat(loan.amount).toLocaleString("en-US", { minimumFractionDigits: 2 }) : "0.00"}
+                              ₱
+                              {loan.principal_amount
+                                ? parseFloat(loan.principal_amount).toLocaleString("en-US", { minimumFractionDigits: 2 })
+                                : "0.00"}
                             </p>
                           </div>
                         </div>
@@ -557,7 +573,7 @@ export default function LenderLoansPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
                       <CreditCard className="h-6 w-6 text-slate-600" />
-                      <h2 className="text-2xl font-bold text-slate-900 truncate">{selectedLoan.id}</h2>
+                      <h2 className="text-2xl font-bold text-slate-900 truncate">{selectedLoan.loan_number}</h2>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap">
                       {getStatusBadge(selectedLoan.status)}
@@ -569,7 +585,7 @@ export default function LenderLoansPage() {
 
               {/* Content */}
               <div className="p-6 space-y-6">
-                {/* Key Financial Info - Prominent Display */}
+                {/* 1. Key Financial Info */}
                 <div className="grid grid-cols-3 gap-4">
                   <div className="bg-emerald-50 rounded-lg p-4 border border-emerald-200">
                     <div className="flex items-center gap-2 mb-1">
@@ -578,7 +594,7 @@ export default function LenderLoansPage() {
                     </div>
                     <p className="text-2xl font-bold text-emerald-900">
                       ₱
-                      {parseFloat(selectedLoan.principal_amount || selectedLoan.amount || "0").toLocaleString("en-US", {
+                      {parseFloat(selectedLoan.principal_amount || selectedLoan.principal_amount || "0").toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
@@ -602,7 +618,7 @@ export default function LenderLoansPage() {
                   </div>
                 </div>
 
-                {/* Borrower Info - Compact Card */}
+                {/* 2. Borrower Info */}
                 {selectedLoan.borrower && (
                   <div className="bg-slate-50 rounded-lg p-4 border">
                     <div className="flex items-center gap-2 mb-3">
@@ -613,7 +629,7 @@ export default function LenderLoansPage() {
                       <div>
                         <p className="text-xs text-slate-500 mb-1">Name</p>
                         <p className="font-medium text-slate-900 text-sm">
-                          {selectedLoan.borrower.name || `${selectedLoan.borrower.first_name} ${selectedLoan.borrower.last_name}`}
+                          {`${selectedLoan.borrower.first_name} ${selectedLoan.borrower.last_name}`}
                         </p>
                       </div>
                       <div className="min-w-0">
@@ -625,11 +641,76 @@ export default function LenderLoansPage() {
                           </p>
                         </div>
                       </div>
+                      {/* Employment Status */}
+                      <div>
+                        <p className="text-xs text-slate-500 mb-1">Employment Status</p>
+                        <p className="font-medium text-slate-900 text-sm capitalize">{selectedLoan.employment_status || "-"}</p>
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* Purpose - If exists */}
+                {/* 3. Loan Details */}
+                <div className="bg-slate-50 rounded-lg p-4 border">
+                  <h3 className="font-semibold text-slate-900 mb-3">Loan Details</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Loan Officer */}
+                    <div>
+                      <p className="text-xs text-slate-500 mb-1">Loan Officer</p>
+                      <p className="font-medium text-slate-900 text-sm">
+                        {`${selectedLoan.loan_officer?.first_name || ""} ${selectedLoan.loan_officer?.last_name || ""}` || "-"}
+                      </p>
+                      <p className="font-medium text-gray-500 text-sm">{selectedLoan.loan_officer?.email || "-"}</p>
+                    </div>
+
+                    {/* Approved Amount */}
+                    <div>
+                      <p className="text-xs text-slate-500 mb-1">Approved Amount</p>
+                      <p className="font-medium text-slate-900 text-sm">
+                        ₱
+                        {parseFloat(selectedLoan.approved_amount || "0").toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        })}
+                      </p>
+                    </div>
+                    {selectedLoan.status === "activated" && (
+                      <>
+                        {/* Start Date */}
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Start Date</p>
+                          <p className="font-medium text-slate-900 text-sm">
+                            {selectedLoan.start_date ? new Date(selectedLoan.start_date).toLocaleDateString() : "-"}
+                          </p>
+                        </div>
+
+                        {/* First Payment Date */}
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">First Payment Date</p>
+                          <p className="font-medium text-slate-900 text-sm">
+                            {selectedLoan.first_payment_date ? new Date(selectedLoan.first_payment_date).toLocaleDateString() : "-"}
+                          </p>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Rejection Reason */}
+                    {selectedLoan.status === "rejected" && (
+                      <div className="col-span-2">
+                        <p className="text-xs text-slate-500 mb-1">Rejection Reason</p>
+                        <p className="font-medium text-slate-900 text-sm">{selectedLoan.rejection_reason || "-"}</p>
+                      </div>
+                    )}
+
+                    {/* Notes */}
+                    <div className="col-span-2">
+                      <p className="text-xs text-slate-500 mb-1">Notes</p>
+                      <p className="font-medium text-slate-900 text-sm">{selectedLoan.notes || "-"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 4. Purpose */}
                 {selectedLoan.purpose && (
                   <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
                     <div className="flex items-center gap-2 mb-2">
@@ -640,7 +721,7 @@ export default function LenderLoansPage() {
                   </div>
                 )}
 
-                {/* Timeline - Horizontal */}
+                {/* 5. Timeline */}
                 <div className="bg-slate-50 rounded-lg p-4 border">
                   <div className="flex items-center gap-2 mb-3">
                     <Calendar className="h-4 w-4 text-slate-600" />
@@ -650,41 +731,21 @@ export default function LenderLoansPage() {
                     <div className="flex-1 min-w-[140px]">
                       <p className="text-xs text-slate-500 mb-1">Applied</p>
                       <p className="font-medium text-slate-900 text-sm">
-                        {new Date(selectedLoan.created_at).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
+                        {new Date(selectedLoan.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                       </p>
                     </div>
                     {selectedLoan.approved_at && (
                       <div className="flex-1 min-w-[140px]">
                         <p className="text-xs text-slate-500 mb-1">Approved</p>
                         <p className="font-medium text-slate-900 text-sm">
-                          {new Date(selectedLoan.approved_at).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                    )}
-                    {selectedLoan.disbursement_date && (
-                      <div className="flex-1 min-w-[140px]">
-                        <p className="text-xs text-slate-500 mb-1">Disbursed</p>
-                        <p className="font-medium text-slate-900 text-sm">
-                          {new Date(selectedLoan.disbursement_date).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
+                          {new Date(selectedLoan.approved_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Documents */}
+                {/* 6. Documents */}
                 {selectedLoan.documents && selectedLoan.documents.length > 0 && (
                   <div className="bg-slate-50 rounded-lg p-4 border">
                     <div className="flex items-center gap-2 mb-3">
@@ -712,9 +773,7 @@ export default function LenderLoansPage() {
                             variant="ghost"
                             size="sm"
                             className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => {
-                              window.open(`/api/loans/${selectedLoan.id}/documents/${doc.id}/download`, "_blank")
-                            }}
+                            onClick={() => window.open(`/api/loans/${selectedLoan.id}/documents/${doc.id}/download`, "_blank")}
                           >
                             <Download className="h-4 w-4" />
                           </Button>
