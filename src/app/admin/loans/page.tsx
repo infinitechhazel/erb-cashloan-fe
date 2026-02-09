@@ -192,141 +192,141 @@ export default function ApplicationsPage() {
     setShowUpdateModal: any,
     router: any,
   ): ColumnDef<LoanApplication, any>[] => [
-    { header: "Loan Number", accessorKey: "id" },
-    {
-      header: "Borrower",
-      accessorFn: (row) => (row.borrower ? `${row.borrower.first_name} ${row.borrower.last_name}` : "N/A"),
-    },
-    { header: "Type", accessorKey: "type" },
-    {
-      header: "Principal Amount",
-      accessorFn: (row) => `₱${Number(row.principal_amount).toLocaleString()}`,
-    },
-    {
-      header: "Approved Amount",
-      accessorFn: (row) => (row.approved_amount ? `₱${Number(row.approved_amount).toLocaleString()}` : "-"),
-    },
-    { header: "Rate", accessorFn: (row) => `${row.interest_rate}%` },
-    {
-      header: "Status",
-      accessorKey: "status",
-      cell: ({ row }) => <Badge className={statusColors[row.original.status] || "bg-gray-100"}>{row.original.status}</Badge>,
-    },
-    { header: "Submitted", accessorFn: (row) => new Date(row.created_at).toLocaleDateString() },
-    {
-      header: "Actions",
-      cell: ({ row }) => {
-        const loan = row.original
-
-        return (
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/loans/${loan.id}`)}>
-              <Eye className="h-4 w-4 text-blue-500" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setSelectedApp(loan)
-                setStatus(loan.status)
-                setApprovedAmount(loan.approved_amount ?? "")
-                setInterestRate(loan.interest_rate ?? "")
-                setNotes(loan.notes ?? "")
-                setRejectionReason(loan.rejection_reason ?? "")
-                setShowUpdateModal(true)
-                setSelectedLenderId(loan.lender?.id ?? null)
-              }}
-            >
-              <Edit2 className="h-4 w-4 text-green-500" />
-            </Button>
-
-            <Select
-              value={row.original.status}
-              onValueChange={(value) => {
-                const loan = row.original
-                setSelectedApp(loan)
-
-                switch (value) {
-                  case "approved":
-                    setApprovedAmount(loan.approved_amount ?? "")
-                    setApprovedRate(loan.interest_rate ?? "")
-                    setShowApproveModal(true)
-                    break
-
-                  case "rejected":
-                    setRejectionReason(loan.rejection_reason ?? "")
-                    setShowRejectModal(true)
-                    break
-
-                  case "active":
-                    setActivateStartDate(loan.start_date ?? "")
-                    setActivateFirstPaymentDate(loan.first_payment_date ?? "")
-                    setShowActivateModal(true)
-                    break
-
-                  default:
-                    // For other status changes, use update modal
-                    setStatus(value)
-                    setNotes(loan.notes ?? "")
-                    setShowUpdateModal(true)
-                    break
-                }
-              }}
-            >
-              <SelectTrigger className="w-[140px] text-sm border-gray-100">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-
-              <SelectContent>
-                <SelectItem value="pending" disabled={loan.status === "completed" || loan.status === "defaulted"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-yellow-500" />
-                    Pending
-                  </span>
-                </SelectItem>
-
-                <SelectItem value="approved" disabled={loan.status !== "pending"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-blue-600" />
-                    Approved
-                  </span>
-                </SelectItem>
-
-                <SelectItem value="rejected" disabled={loan.status !== "pending"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-red-600" />
-                    Rejected
-                  </span>
-                </SelectItem>
-
-                <SelectItem value="active" disabled={loan.status !== "approved"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-green-600" />
-                    Active
-                  </span>
-                </SelectItem>
-
-                <SelectItem value="completed" disabled={loan.status !== "active"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-gray-600" />
-                    Completed
-                  </span>
-                </SelectItem>
-
-                <SelectItem value="defaulted" disabled={loan.status !== "completed"}>
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-black" />
-                    Defaulted
-                  </span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )
+      { header: "Loan Number", accessorKey: "id" },
+      {
+        header: "Borrower",
+        accessorFn: (row) => (row.borrower ? `${row.borrower.first_name} ${row.borrower.last_name}` : "N/A"),
       },
-    },
-  ]
+      { header: "Type", accessorKey: "type" },
+      {
+        header: "Principal Amount",
+        accessorFn: (row) => `₱${Number(row.principal_amount).toLocaleString()}`,
+      },
+      {
+        header: "Approved Amount",
+        accessorFn: (row) => (row.approved_amount ? `₱${Number(row.approved_amount).toLocaleString()}` : "-"),
+      },
+      { header: "Rate", accessorFn: (row) => `${row.interest_rate}%` },
+      {
+        header: "Status",
+        accessorKey: "status",
+        cell: ({ row }) => <Badge className={statusColors[row.original.status] || "bg-gray-100"}>{row.original.status}</Badge>,
+      },
+      { header: "Submitted", accessorFn: (row) => new Date(row.created_at).toLocaleDateString() },
+      {
+        header: "Actions",
+        cell: ({ row }) => {
+          const loan = row.original
+
+          return (
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={() => router.push(`/admin/loans/${loan.id}`)}>
+                <Eye className="h-4 w-4 text-blue-500" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSelectedApp(loan)
+                  setStatus(loan.status)
+                  setApprovedAmount(loan.approved_amount ?? "")
+                  setInterestRate(loan.interest_rate ?? "")
+                  setNotes(loan.notes ?? "")
+                  setRejectionReason(loan.rejection_reason ?? "")
+                  setShowUpdateModal(true)
+                  setSelectedLenderId(loan.lender?.id ?? null)
+                }}
+              >
+                <Edit2 className="h-4 w-4 text-green-500" />
+              </Button>
+
+              <Select
+                value={row.original.status}
+                onValueChange={(value) => {
+                  const loan = row.original
+                  setSelectedApp(loan)
+
+                  switch (value) {
+                    case "approved":
+                      setApprovedAmount(loan.approved_amount ?? "")
+                      setApprovedRate(loan.interest_rate ?? "")
+                      setShowApproveModal(true)
+                      break
+
+                    case "rejected":
+                      setRejectionReason(loan.rejection_reason ?? "")
+                      setShowRejectModal(true)
+                      break
+
+                    case "active":
+                      setActivateStartDate(loan.start_date ?? "")
+                      setActivateFirstPaymentDate(loan.first_payment_date ?? "")
+                      setShowActivateModal(true)
+                      break
+
+                    default:
+                      // For other status changes, use update modal
+                      setStatus(value)
+                      setNotes(loan.notes ?? "")
+                      setShowUpdateModal(true)
+                      break
+                  }
+                }}
+              >
+                <SelectTrigger className="w-[140px] text-sm border-gray-100">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="pending" disabled={loan.status === "completed" || loan.status === "defaulted"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-yellow-500" />
+                      Pending
+                    </span>
+                  </SelectItem>
+
+                  <SelectItem value="approved" disabled={loan.status !== "pending"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-blue-600" />
+                      Approved
+                    </span>
+                  </SelectItem>
+
+                  <SelectItem value="rejected" disabled={loan.status !== "pending"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-red-600" />
+                      Rejected
+                    </span>
+                  </SelectItem>
+
+                  <SelectItem value="active" disabled={loan.status !== "approved"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-green-600" />
+                      Active
+                    </span>
+                  </SelectItem>
+
+                  <SelectItem value="completed" disabled={loan.status !== "active"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-gray-600" />
+                      Completed
+                    </span>
+                  </SelectItem>
+
+                  <SelectItem value="defaulted" disabled={loan.status !== "completed"}>
+                    <span className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full bg-black" />
+                      Defaulted
+                    </span>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )
+        },
+      },
+    ]
 
   const columns = getColumns(
     statusColors,
@@ -576,9 +576,9 @@ export default function ApplicationsPage() {
   const pageCount = Math.ceil(filteredData.length / pageSize)
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 ml-64 bg-background min-h-screen">
+      <main className="flex-1 bg-background min-h-screen">
         <header className="border-b border-border bg-card sticky top-0 z-40">
           <div className="px-8 py-6">
             <h1 className="text-3xl font-bold text-primary">Loan Applications</h1>
@@ -586,7 +586,7 @@ export default function ApplicationsPage() {
           </div>
         </header>
 
-        <div className="mt-8 grid grid-cols-4 gap-4 mb-6">
+        <div className="mt-8 grid grid-cols-4 gap-4 mb-6 px-6">
           <Card className="p-4 text-center">
             <h3 className="text-sm font-medium text-muted-foreground">Total Loans</h3>
             <p className="text-xl font-bold">{statsLoading ? "..." : (loanStats?.total_loans ?? 0)}</p>

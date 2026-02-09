@@ -154,7 +154,7 @@ export default function AdminPaymentsPage() {
   return (
     <div className="flex min-h-screen bg-background">
       <AdminSidebar />
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <header className="border-b border-border bg-card sticky top-0 z-10">
           <div className="px-4 sm:px-6 py-4 flex items-center justify-between">
             <div>

@@ -135,11 +135,11 @@ export default function LoanDetailsPage() {
   }
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <div className="flex-1 lg:ml-0">
         <div className="lg:hidden h-16" />
 
-        <main className="flex-1 ml-64 bg-background min-h-screen">
+        <main className="flex-1 bg-background min-h-screen">
           <header className="border-b border-border bg-card">
             <div className="px-4 sm:px-6 py-4">
               <div className="flex items-center justify-between">

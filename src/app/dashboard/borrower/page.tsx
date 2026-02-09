@@ -23,13 +23,6 @@ import {
     Minus,
     Plus
 } from "lucide-react"
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
 
 interface User {
     id: number

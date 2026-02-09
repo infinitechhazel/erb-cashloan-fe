@@ -215,7 +215,7 @@ export default function LoanOfficerDashboardPage() {
     <div className="flex min-h-screen bg-background">
       <LoanOfficerSidebar />
 
-      <div className="flex-1 lg:ml-64">
+      <div className="flex-1">
         <div className="lg:hidden h-16" />
 
         <header className="border-b border-border bg-card sticky top-0 z-10">

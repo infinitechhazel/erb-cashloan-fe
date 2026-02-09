@@ -120,12 +120,12 @@ export default function LoanDetailPage() {
   if (!loan) return null
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <AdminSidebar />
 
       {/* Main content */}
-      <main className="flex-1 ml-64 bg-background min-h-screen">
+      <main className="flex-1 bg-background min-h-screen">
         {/* Header */}
         <header className="sticky top-0 z-40 border-b bg-card">
           <div className="px-8 py-6 max-w-7xl mx-auto">
