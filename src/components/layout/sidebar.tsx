@@ -4,7 +4,20 @@ import { useState, useEffect } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/components/auth-context"
-import { LogOut, Menu, X, Building2, LayoutDashboard, FileText, Settings, Users, File, User, CreditCard, DollarSign } from "lucide-react"
+import {
+  LogOut,
+  Menu,
+  X,
+  Building2,
+  LayoutDashboard,
+  FileText,
+  Settings,
+  Users,
+  File,
+  User,
+  CreditCard,
+  DollarSign,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 // Navigation items for each role
@@ -69,6 +82,11 @@ const navigationByRole = {
     },
   ],
   admin: [
+    {
+      name: "Home",
+      href: "/",
+      icon: LayoutDashboard,
+    },
     {
       name: "Dashboard",
       href: "/admin/dashboard",
@@ -172,7 +190,6 @@ export function RoleBasedSidebar() {
     "/blog",
     "/help",
     "/profile",
-    "/settings",
     "/login",
     "/register",
     "/about",
@@ -207,14 +224,29 @@ export function RoleBasedSidebar() {
             <Building2 className="h-6 w-6 text-primary" />
             <span className="font-semibold text-lg">{portalName}</span>
           </div>
-          <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
       </div>
 
       {/* Mobile Overlay */}
-      {mobileMenuOpen && <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileMenuOpen(false)} aria-hidden="true" />}
+      {mobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
       {/* Sidebar */}
       <aside
@@ -222,7 +254,9 @@ export function RoleBasedSidebar() {
           "fixed top-0 left-0 z-50 h-screen bg-card border-r border-border w-64 shadow-lg",
           "transition-transform duration-300 ease-in-out",
           "lg:translate-x-0",
-          mobileMenuOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+          mobileMenuOpen
+            ? "translate-x-0"
+            : "-translate-x-full lg:translate-x-0",
         )}
       >
         <div className="flex flex-col h-full">
@@ -238,19 +272,6 @@ export function RoleBasedSidebar() {
             <span className="font-semibold text-lg">{portalName}</span>
           </div>
 
-          {/* User Info */}
-          {user && (
-            <div className="px-6 py-4 border-b border-border bg-muted/50">
-              <p className="text-sm font-medium truncate">
-                {user.first_name} {user.last_name}
-              </p>
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-              <p className="text-xs text-muted-foreground mt-1 capitalize">
-                <span className="font-medium">Role:</span> {user.role?.replace("_", " ")}
-              </p>
-            </div>
-          )}
-
           {/* Navigation */}
           <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigation.map((item) => {
@@ -263,7 +284,11 @@ export function RoleBasedSidebar() {
                 <Button
                   key={item.name}
                   variant={isActive ? "secondary" : "ghost"}
-                  className={cn("w-full justify-start gap-3 hover:bg-primary/5 hover:text-primary", isActive && "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary")}
+                  className={cn(
+                    "w-full justify-start gap-3 hover:bg-primary/5 hover:text-primary",
+                    isActive &&
+                      "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+                  )}
                   onClick={() => handleNavigation(item.href)}
                 >
                   <Icon className="h-5 w-5" />
@@ -279,9 +304,12 @@ export function RoleBasedSidebar() {
               <p className="text-sm font-medium truncate">
                 {user.first_name} {user.last_name}
               </p>
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </p>
               <p className="text-xs text-muted-foreground mt-1 capitalize">
-                <span className="font-medium">Role:</span> {user.role?.replace('_', ' ')}
+                <span className="font-medium">Role:</span>{" "}
+                {user.role?.replace("_", " ")}
               </p>
             </div>
           )}
