@@ -49,45 +49,47 @@ export default function AdminDashboard() {
     }, [authenticated, router])
 
     const fetchAdminData = async () => {
+        setLoading(true)
+
         try {
             const token = localStorage.getItem("token")
-            if (!token) {
-                router.push("/login")
-                return
-            }
+            if (!token) throw new Error("Unauthorized")
+
+            const baseUrl =
+                process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
 
             const [usersRes, loansRes] = await Promise.all([
-                fetch("http://localhost:8000/api/user", {
+                fetch(`${baseUrl}/api/user`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
-                fetch("http://localhost:8000/api/loans", {
+                fetch(`${baseUrl}/api/loans`, {
                     headers: { Authorization: `Bearer ${token}` },
                 }),
             ])
 
-            if (!usersRes.ok || !loansRes.ok) {
-                throw new Error("Failed to fetch admin data")
-            }
+            if (!usersRes.ok) throw new Error("Failed to fetch users")
+            if (!loansRes.ok) throw new Error("Failed to fetch loans")
 
             const usersData = await usersRes.json()
             const loansData = await loansRes.json()
 
-            const normalizedUsers = Array.isArray(usersData.users)
-                ? usersData.users
-                : Array.isArray(usersData)
-                    ? usersData
-                    : []
+            // Normalize users response
+            const normalizedUsers: BorrowerUser[] =
+                usersData.users ||
+                usersData.data ||
+                usersData ||
+                []
 
-            const normalizedLoans = Array.isArray(loansData.loan)
-                ? loansData.loan
-                : Array.isArray(loansData.loans)
-                    ? loansData.loans
-                    : Array.isArray(loansData)
-                        ? loansData
-                        : []
+            // Normalize loans response
+            const normalizedLoans: Loan[] =
+                loansData.loans ||
+                loansData.loan ||
+                loansData.data ||
+                loansData ||
+                []
 
-            setUsers(normalizedUsers)
-            setLoans(normalizedLoans)
+            setUsers(Array.isArray(normalizedUsers) ? normalizedUsers : [])
+            setLoans(Array.isArray(normalizedLoans) ? normalizedLoans : [])
         } catch (error) {
             console.error("Admin fetch error:", error)
             localStorage.removeItem("token")
