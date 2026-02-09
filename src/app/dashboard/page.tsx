@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-context"
 import BorrowerDashboard from "./borrower/page"
@@ -9,6 +10,12 @@ import LenderDashboard from "./lender/page"
 export default function DashboardPage() {
   const router = useRouter()
   const { user, authenticated } = useAuth()
+
+  useEffect(() => {
+    if (!authenticated) {
+      router.push("/")
+    }
+  }, [authenticated, router])
 
   const getRoleDashboard = () => {
     switch (user?.role) {
@@ -23,11 +30,7 @@ export default function DashboardPage() {
     }
   }
 
-  if (!authenticated) {
-    router.push("/")
-    return null
-  }
+  if (!authenticated) return null
 
   return getRoleDashboard()
 }
-
