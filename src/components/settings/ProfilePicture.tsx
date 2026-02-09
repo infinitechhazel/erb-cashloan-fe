@@ -1,4 +1,3 @@
-// components/settings/ProfilePicture.tsx
 "use client"
 
 import { useRef, useState } from "react"
@@ -173,7 +172,7 @@ export default function ProfilePicture({
             formData.append('remove_profile_url', 'true')
             formData.append('_method', 'PUT')
 
-            const response = await fetch('/api/s/update-profile', {
+            const response = await fetch('/api/settings/update-profile', {
                 method: 'PUT',
                 credentials: 'include',
                 body: formData,

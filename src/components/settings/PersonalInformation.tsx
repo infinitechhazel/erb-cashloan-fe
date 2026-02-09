@@ -1,10 +1,11 @@
-// components/settings/PersonalInformation.tsx
 "use client"
 
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { User, Mail, Phone, Loader2, MapPin } from "lucide-react"
+import { Button } from "../ui/button"
+import { toast } from "sonner"
 
 interface ProfileData {
   firstName: string
@@ -13,10 +14,6 @@ interface ProfileData {
   phone: string
   profileImageUrl: string
   address?: string
-  city?: string
-  state?: string
-  postalCode?: string
-  country?: string
 }
 
 interface PersonalInformationProps {
@@ -26,12 +23,7 @@ interface PersonalInformationProps {
   onSuccess: (message: string) => void
 }
 
-export default function PersonalInformation({
-  profileData,
-  onUpdate,
-  onError,
-  onSuccess
-}: PersonalInformationProps) {
+export default function PersonalInformation({ profileData, onUpdate, onError, onSuccess }: PersonalInformationProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [tempProfileData, setTempProfileData] = useState<ProfileData>(profileData)
 
@@ -42,37 +34,40 @@ export default function PersonalInformation({
 
   const handleSaveProfile = async () => {
     if (!tempProfileData.firstName.trim() || !tempProfileData.lastName.trim()) {
-      onError("First name and last name are required")
+      toast.error("First name and last name are required")
       return
     }
+
+    // Prevent duplicate saves
+    if (isSaving) return
 
     try {
       setIsSaving(true)
 
       const formData = new FormData()
-      formData.append('first_name', tempProfileData.firstName)
-      formData.append('last_name', tempProfileData.lastName)
-      formData.append('address', tempProfileData.address || '')
-      formData.append('city', tempProfileData.city || '')
-      formData.append('state', tempProfileData.state || '')
-      formData.append('postal_code', tempProfileData.postalCode || '')
-      formData.append('country', tempProfileData.country || '')
-      formData.append('_method', 'PUT')
+      formData.append("first_name", tempProfileData.firstName)
+      formData.append("last_name", tempProfileData.lastName)
+      formData.append("address", tempProfileData.address || "")
+      formData.append("_method", "PUT")
 
-      // Update profile (name)
-      const profileResponse = await fetch('/api/settings/update-profile', {
-        method: 'PUT',
-        credentials: 'include',
+      // Update profile
+      const profileResponse = await fetch("/api/settings/update-profile", {
+        method: "PUT",
+        credentials: "include",
         body: formData,
       })
 
       if (!profileResponse.ok) {
         const error = await profileResponse.json()
-        throw new Error(error.message || 'Failed to update profile')
+        throw new Error(error.message || "Failed to update profile")
       }
 
       // Update contact info if changed
-      if (tempProfileData.email !== profileData.email || tempProfileData.phone !== profileData.phone) {
+      if (
+        tempProfileData.email !== profileData.email ||
+        tempProfileData.phone !== profileData.phone ||
+        tempProfileData.address !== profileData.address
+      ) {
         if (!tempProfileData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
           throw new Error("Please enter a valid email address")
         }
@@ -81,35 +76,33 @@ export default function PersonalInformation({
           throw new Error("Phone number must be exactly 11 digits")
         }
 
-        const contactResponse = await fetch('/api/settings/update-information', {
-          method: 'PUT',
-          credentials: 'include',
+        const contactResponse = await fetch("/api/settings/update-contact", {
+          method: "PUT",
+          credentials: "include",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            first_name: tempProfileData.firstName,
+            last_name: tempProfileData.lastName,
             email: tempProfileData.email,
             phone: tempProfileData.phone,
             address: tempProfileData.address,
-            city: tempProfileData.city,
-            state: tempProfileData.state,
-            postalCode: tempProfileData.postalCode,
-            country: tempProfileData.country
           }),
         })
 
         if (!contactResponse.ok) {
           const error = await contactResponse.json()
-          throw new Error(error.message || 'Failed to update contact info')
+          throw new Error(error.message || "Failed to update contact info")
         }
       }
 
-      // Include profileImageUrl when updating
       onUpdate({ ...tempProfileData, profileImageUrl: profileData.profileImageUrl })
-      onSuccess("Profile updated successfully!")
+
+      toast.success("Profile updated successfully")
     } catch (error: any) {
-      console.error('Error updating profile:', error)
-      onError(error.message || "Failed to update profile")
+      console.error("Error updating profile:", error)
+      toast.error(error.message || "Failed to update profile")
     } finally {
       setIsSaving(false)
     }
@@ -123,11 +116,7 @@ export default function PersonalInformation({
           tempProfileData.lastName !== profileData.lastName ||
           tempProfileData.email !== profileData.email ||
           tempProfileData.phone !== profileData.phone ||
-          tempProfileData.address !== profileData.address ||
-          tempProfileData.city !== profileData.city ||
-          tempProfileData.state !== profileData.state ||
-          tempProfileData.postalCode !== profileData.postalCode ||
-          tempProfileData.country !== profileData.country) &&
+          tempProfileData.address !== profileData.address) &&
         tempProfileData.firstName.trim() &&
         tempProfileData.lastName.trim()
       ) {
@@ -143,9 +132,7 @@ export default function PersonalInformation({
     <div className="space-y-6">
       {/* Auto-save indicator */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-600">
-          Changes are saved automatically
-        </p>
+        <p className="text-sm text-slate-600">Changes are saved automatically</p>
         {isSaving && (
           <div className="flex items-center gap-2 text-sm text-primary">
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -165,9 +152,7 @@ export default function PersonalInformation({
             <Input
               className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
               value={tempProfileData.firstName}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, firstName: e.target.value })
-              }
+              onChange={(e) => setTempProfileData({ ...tempProfileData, firstName: e.target.value })}
               placeholder="John"
             />
           </div>
@@ -179,9 +164,7 @@ export default function PersonalInformation({
             <Input
               className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
               value={tempProfileData.lastName}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, lastName: e.target.value })
-              }
+              onChange={(e) => setTempProfileData({ ...tempProfileData, lastName: e.target.value })}
               placeholder="Doe"
             />
           </div>
@@ -198,9 +181,9 @@ export default function PersonalInformation({
               type="email"
               className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
               value={tempProfileData.email}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, email: e.target.value })
-              }
+              onChange={(e) => setTempProfileData({ ...tempProfileData, email: e.target.value })}
+              disabled
+              readOnly
               placeholder="john.doe@example.com"
             />
           </div>
@@ -215,9 +198,7 @@ export default function PersonalInformation({
               type="tel"
               className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
               value={tempProfileData.phone}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, phone: e.target.value.replace(/\D/g, "") })
-              }
+              onChange={(e) => setTempProfileData({ ...tempProfileData, phone: e.target.value.replace(/\D/g, "") })}
               placeholder="09123456789"
               maxLength={11}
             />
@@ -237,87 +218,22 @@ export default function PersonalInformation({
               id="address"
               className="w-full border-2 border-slate-300 focus:border-primary focus:ring-primary bg-white h-24 w-full p-2 rounded-md"
               value={tempProfileData.address}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, address: e.target.value })
-              }
+              onChange={(e) => setTempProfileData({ ...tempProfileData, address: e.target.value })}
               placeholder="Enter your full address"
             />
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* City Field */}
-          <div className="space-y-2">
-            <Label className="text-slate-700 font-medium flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" />
-              City
-            </Label>
-            <Input
-              type="text"
-              className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
-              value={tempProfileData.city}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, city: e.target.value })
-              }
-              placeholder="City"
-            />
-          </div>
-
-          {/* State Field */}
-          <div className="space-y-2">
-            <Label className="text-slate-700 font-medium flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" />
-              State
-            </Label>
-            <Input
-              type="text"
-              className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
-              value={tempProfileData.state}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, state: e.target.value })
-              }
-              placeholder="State"
-            />
-          </div>
-        </div>
-
-
-        <div className="grid md:grid-cols-2 gap-4">
-          {/* Postal Code Field */}
-          <div className="space-y-2">
-            <Label className="text-slate-700 font-medium flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" />
-              Postal Code
-            </Label>
-            <Input
-              type="text"
-              className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
-              value={tempProfileData.postalCode}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, postalCode: e.target.value })
-              }
-              placeholder="Postal Code"
-            />
-          </div>
-
-          {/* Country Field */}
-          <div className="space-y-2">
-            <Label className="text-slate-700 font-medium flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-slate-500" />
-              Country
-            </Label>
-            <Input
-              type="text"
-              className="border-slate-300 focus:border-primary focus:ring-primary bg-white h-11"
-              value={tempProfileData.country}
-              onChange={(e) =>
-                setTempProfileData({ ...tempProfileData, country: e.target.value })
-              }
-              placeholder="Country"
-            />
-          </div>
-        </div>
-
+        <Button onClick={handleSaveProfile} disabled={isSaving} className="w-fit">
+          {isSaving ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Saving
+            </>
+          ) : (
+            "Save Changes"
+          )}
+        </Button>
       </div>
     </div>
   )

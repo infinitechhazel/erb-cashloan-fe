@@ -1,41 +1,13 @@
 "use client"
 
 import { useState, useEffect, ReactNode } from "react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Search,
-  X,
-} from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown, Search, X } from "lucide-react"
 import { authenticatedFetch, handleApiResponse } from "@/lib/auth"
 import { useRouter } from "next/navigation"
 
@@ -103,7 +75,7 @@ interface PaginationData {
   to: number
 }
 
-type SortOrder = 'asc' | 'desc' | null
+type SortOrder = "asc" | "desc" | null
 
 export function ReusableDataTable<T extends Record<string, any>>({
   apiEndpoint,
@@ -144,7 +116,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
   const [perPage, setPerPage] = useState(defaultPerPage.toString())
   const [filterValues, setFilterValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {}
-    filters.forEach(filter => {
+    filters.forEach((filter) => {
       initial[filter.key] = filter.defaultValue || (filter.type === "select" ? "all" : "")
     })
     return initial
@@ -156,7 +128,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
   useEffect(() => {
     const timer = setTimeout(() => {
       setSearchTerm(searchInput)
-      setPagination(prev => ({ ...prev, current_page: 1 }))
+      setPagination((prev) => ({ ...prev, current_page: 1 }))
     }, 500)
 
     return () => clearTimeout(timer)
@@ -180,9 +152,9 @@ export function ReusableDataTable<T extends Record<string, any>>({
 
       // Add search
       if (searchTerm) {
-        params.append('search', searchTerm)
+        params.append("search", searchTerm)
         if (searchFields.length > 0) {
-          params.append('search_fields', searchFields.join(','))
+          params.append("search_fields", searchFields.join(","))
         }
       }
 
@@ -195,30 +167,30 @@ export function ReusableDataTable<T extends Record<string, any>>({
 
       // Add sorting
       if (sortField && sortOrder) {
-        params.append('sort_by', sortField)
-        params.append('sort_order', sortOrder)
+        params.append("sort_by", sortField)
+        params.append("sort_order", sortOrder)
       }
 
       const url = `${apiEndpoint}?${params}`
 
-      console.log('📡 [DataTable] Fetching:', url)
+      console.log("📡 [DataTable] Fetching:", url)
 
       // Use authenticatedFetch instead of direct fetch
       const response = await authenticatedFetch(url)
       const result = await handleApiResponse<any>(response, router)
 
-      console.log('📦 [DataTable] Full response:', result)
-      console.log('📊 [DataTable] Data array:', result.data)
-      console.log('📈 [DataTable] Pagination:', {
+      console.log("📦 [DataTable] Full response:", result)
+      console.log("📊 [DataTable] Data array:", result.data)
+      console.log("📈 [DataTable] Pagination:", {
         current_page: result.current_page,
         last_page: result.last_page,
-        total: result.total
+        total: result.total,
       })
 
       // ✅ Direct Laravel pagination format
       const dataArray = Array.isArray(result.data) ? result.data : []
 
-      console.log('✅ [DataTable] Setting data:', dataArray.length, 'items')
+      console.log("✅ [DataTable] Setting data:", dataArray.length, "items")
 
       setData(dataArray)
       setPagination({
@@ -240,52 +212,52 @@ export function ReusableDataTable<T extends Record<string, any>>({
 
   const handleSort = (field: string) => {
     if (sortField === field) {
-      if (sortOrder === 'asc') {
-        setSortOrder('desc')
-      } else if (sortOrder === 'desc') {
+      if (sortOrder === "asc") {
+        setSortOrder("desc")
+      } else if (sortOrder === "desc") {
         setSortField(null)
         setSortOrder(null)
       }
     } else {
       setSortField(field)
-      setSortOrder('asc')
+      setSortOrder("asc")
     }
-    setPagination(prev => ({ ...prev, current_page: 1 }))
+    setPagination((prev) => ({ ...prev, current_page: 1 }))
   }
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) {
       return <ArrowUpDown className="ml-2 h-4 w-4 text-gray-400" />
     }
-    if (sortOrder === 'asc') {
+    if (sortOrder === "asc") {
       return <ArrowUp className="ml-2 h-4 w-4 text-blue-800" />
     }
     return <ArrowDown className="ml-2 h-4 w-4 text-blue-800" />
   }
 
   const handleFilterChange = (key: string, value: string) => {
-    setFilterValues(prev => ({ ...prev, [key]: value }))
-    setPagination(prev => ({ ...prev, current_page: 1 }))
+    setFilterValues((prev) => ({ ...prev, [key]: value }))
+    setPagination((prev) => ({ ...prev, current_page: 1 }))
   }
 
   const clearFilters = () => {
     setSearchInput("")
     setSearchTerm("")
     const resetFilters: Record<string, string> = {}
-    filters.forEach(filter => {
+    filters.forEach((filter) => {
       resetFilters[filter.key] = filter.defaultValue || (filter.type === "select" ? "all" : "")
     })
     setFilterValues(resetFilters)
     setSortField(null)
     setSortOrder(null)
-    setPagination(prev => ({ ...prev, current_page: 1 }))
+    setPagination((prev) => ({ ...prev, current_page: 1 }))
   }
 
   const hasActiveFilters = () => {
     if (searchTerm) return true
     if (sortField) return true
     return Object.entries(filterValues).some(([key, value]) => {
-      const filter = filters.find(f => f.key === key)
+      const filter = filters.find((f) => f.key === key)
       const defaultVal = filter?.defaultValue || (filter?.type === "select" ? "all" : "")
       return value !== defaultVal
     })
@@ -303,7 +275,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
 
   // Get nested value from object using dot notation
   const getNestedValue = (obj: any, path: string) => {
-    return path.split('.').reduce((curr, key) => curr?.[key], obj)
+    return path.split(".").reduce((curr, key) => curr?.[key], obj)
   }
 
   return (
@@ -318,17 +290,9 @@ export function ReusableDataTable<T extends Record<string, any>>({
             <div className="md:col-span-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder={searchPlaceholder}
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  className="pl-9"
-                />
+                <Input placeholder={searchPlaceholder} value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="pl-9" />
                 {searchInput && (
-                  <button
-                    onClick={() => setSearchInput("")}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                  >
+                  <button onClick={() => setSearchInput("")} className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     <X className="h-4 w-4 text-gray-400 hover:text-gray-600" />
                   </button>
                 )}
@@ -336,19 +300,15 @@ export function ReusableDataTable<T extends Record<string, any>>({
             </div>
 
             {/* Dynamic Filters */}
-            {filters.map(filter => {
+            {filters.map((filter) => {
               if (filter.type === "select") {
                 return (
-                  <Select
-                    key={filter.key}
-                    value={filterValues[filter.key]}
-                    onValueChange={(value) => handleFilterChange(filter.key, value)}
-                  >
+                  <Select key={filter.key} value={filterValues[filter.key]} onValueChange={(value) => handleFilterChange(filter.key, value)}>
                     <SelectTrigger>
                       <SelectValue placeholder={filter.label} />
                     </SelectTrigger>
                     <SelectContent>
-                      {filter.options?.map(option => (
+                      {filter.options?.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
                           {option.label}
                         </SelectItem>
@@ -368,13 +328,18 @@ export function ReusableDataTable<T extends Record<string, any>>({
               {searchTerm && (
                 <Badge variant="secondary" className="gap-1">
                   Search: {searchTerm}
-                  <button onClick={() => { setSearchInput(""); setSearchTerm("") }}>
+                  <button
+                    onClick={() => {
+                      setSearchInput("")
+                      setSearchTerm("")
+                    }}
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
               )}
               {Object.entries(filterValues).map(([key, value]) => {
-                const filter = filters.find(f => f.key === key)
+                const filter = filters.find((f) => f.key === key)
                 const defaultVal = filter?.defaultValue || (filter?.type === "select" ? "all" : "")
                 if (value && value !== defaultVal) {
                   return (
@@ -390,18 +355,20 @@ export function ReusableDataTable<T extends Record<string, any>>({
               })}
               {sortField && (
                 <Badge variant="secondary" className="gap-1">
-                  Sort: {sortField} ({sortOrder})
-                  <button onClick={() => { setSortField(null); setSortOrder(null) }}>
+                  <span className="capitalize">
+                    Sort: {sortField} ({sortOrder})
+                  </span>
+                  <button
+                    onClick={() => {
+                      setSortField(null)
+                      setSortOrder(null)
+                    }}
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
               )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearFilters}
-                className="ml-auto text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
+              <Button variant="ghost" size="sm" onClick={clearFilters} className="ml-auto text-red-600 hover:text-red-700 hover:bg-red-50">
                 Clear All
               </Button>
             </div>
@@ -418,18 +385,12 @@ export function ReusableDataTable<T extends Record<string, any>>({
                 {columns.map((column) => (
                   <TableHead
                     key={column.key}
-                    className={`text-blue-800 font-semibold ${column.width || ''} ${column.align === 'center'
-                        ? 'text-center'
-                        : column.align === 'right'
-                          ? 'text-right'
-                          : ''
-                      }`}
+                    className={`text-blue-800 font-semibold ${column.width || ""} ${
+                      column.align === "center" ? "text-center" : column.align === "right" ? "text-right" : ""
+                    }`}
                   >
                     {column.sortable ? (
-                      <button
-                        onClick={() => handleSort(column.key)}
-                        className="flex items-center justify-center gap-1 transition-colors w-full"
-                      >
+                      <button onClick={() => handleSort(column.key)} className="flex items-center justify-center gap-1 transition-colors w-full">
                         {column.label}
                         {getSortIcon(column.key)}
                       </button>
@@ -437,25 +398,26 @@ export function ReusableDataTable<T extends Record<string, any>>({
                       column.label
                     )}
                   </TableHead>
-
                 ))}
-                {rowActions && (
-                  <TableHead className="text-blue-800 font-semibold text-center w-[100px]">
-                    Actions
-                  </TableHead>
-                )}
+                {rowActions && <TableHead className="text-blue-800 font-semibold text-center w-[100px]">Actions</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + (rowActions ? 1 : 0)} className="flex items-center justify-center gap-1 transition-colors w-full">
+                  <TableCell
+                    colSpan={columns.length + (rowActions ? 1 : 0)}
+                    className="flex items-center justify-center gap-1 transition-colors w-full"
+                  >
                     {loadingMessage}
                   </TableCell>
                 </TableRow>
               ) : data.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + (rowActions ? 1 : 0)} className="flex items-center justify-center gap-1 transition-colors w-full">
+                  <TableCell
+                    colSpan={columns.length + (rowActions ? 1 : 0)}
+                    className="flex items-center justify-center gap-1 transition-colors w-full"
+                  >
                     {emptyMessage}
                   </TableCell>
                 </TableRow>
@@ -463,8 +425,9 @@ export function ReusableDataTable<T extends Record<string, any>>({
                 data.map((row, rowIndex) => (
                   <TableRow
                     key={rowIndex}
-                    className={`hover:bg-blue-50/50 transition-colors border-b border-gray-100 ${onRowClick || detailsDialog?.enabled ? 'cursor-pointer' : ''
-                      }`}
+                    className={`hover:bg-blue-50/50 transition-colors border-b border-gray-100 ${
+                      onRowClick || detailsDialog?.enabled ? "cursor-pointer" : ""
+                    }`}
                   >
                     {columns.map((column) => {
                       const value = getNestedValue(row, column.key)
@@ -472,9 +435,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
                         <TableCell
                           key={column.key}
                           className={`
-                            ${column.align === 'center' ? 'text-center' :
-                              column.align === 'right' ? 'text-right' : ''}`
-                          }
+                            ${column.align === "center" ? "text-center" : column.align === "right" ? "text-right" : ""}`}
                           onClick={() => handleRowClick(row)}
                         >
                           {column.render ? column.render(value, row) : value}
@@ -483,9 +444,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
                     })}
                     {rowActions && (
                       <TableCell className="text-center" onClick={(e) => e.stopPropagation()}>
-                        <div onClick={() => handleRowClick(row)}>
-                          {rowActions(row)}
-                        </div>
+                        <div onClick={() => handleRowClick(row)}>{rowActions(row)}</div>
                       </TableCell>
                     )}
                   </TableRow>
@@ -504,10 +463,13 @@ export function ReusableDataTable<T extends Record<string, any>>({
               <p className="text-sm text-blue-800 whitespace-nowrap">
                 Showing {pagination.from} to {pagination.to} of {pagination.total} items
               </p>
-              <Select value={perPage} onValueChange={(value) => {
-                setPerPage(value)
-                setPagination(prev => ({ ...prev, current_page: 1 }))
-              }}>
+              <Select
+                value={perPage}
+                onValueChange={(value) => {
+                  setPerPage(value)
+                  setPagination((prev) => ({ ...prev, current_page: 1 }))
+                }}
+              >
                 <SelectTrigger className="w-[120px]">
                   <SelectValue />
                 </SelectTrigger>
@@ -523,7 +485,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({ ...prev, current_page: 1 }))}
+                onClick={() => setPagination((prev) => ({ ...prev, current_page: 1 }))}
                 disabled={pagination.current_page === 1}
               >
                 <ChevronsLeft className="h-4 w-4 text-blue-800" />
@@ -531,7 +493,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page - 1 }))}
+                onClick={() => setPagination((prev) => ({ ...prev, current_page: prev.current_page - 1 }))}
                 disabled={pagination.current_page === 1}
               >
                 <ChevronLeft className="h-4 w-4 text-blue-800" />
@@ -544,7 +506,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({ ...prev, current_page: prev.current_page + 1 }))}
+                onClick={() => setPagination((prev) => ({ ...prev, current_page: prev.current_page + 1 }))}
                 disabled={pagination.current_page === pagination.last_page}
               >
                 <ChevronRight className="h-4 w-4 text-blue-800" />
@@ -552,7 +514,7 @@ export function ReusableDataTable<T extends Record<string, any>>({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPagination(prev => ({ ...prev, current_page: pagination.last_page }))}
+                onClick={() => setPagination((prev) => ({ ...prev, current_page: pagination.last_page }))}
                 disabled={pagination.current_page === pagination.last_page}
               >
                 <ChevronsRight className="h-4 w-4 text-blue-800" />
