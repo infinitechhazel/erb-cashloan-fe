@@ -3,9 +3,9 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/components/auth-context"
-import BorrowerDashboard from "./borrower/page"
-import AdminDashboard from "./admin/page"
-import LenderDashboard from "./lender/page"
+import BorrowerDashboard from "../borrower/dashboard/page"
+import AdminDashboard from "../admin/dashboard/page"
+import LenderDashboard from "../lender/dashboard/page"
 
 export default function DashboardPage() {
   const router = useRouter()
