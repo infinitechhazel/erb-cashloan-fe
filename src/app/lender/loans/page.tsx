@@ -195,20 +195,20 @@ export default function LenderLoansPage() {
   // Safe filtering with null checks
   const filteredLoans = Array.isArray(loans)
     ? loans.filter((loan) => {
-        if (!loan) return false
+      if (!loan) return false
 
-        const loanNumber = loan.loan_number?.toLowerCase() || ""
-        const borrowerName = getBorrowerName(loan.borrower).toLowerCase()
-        const borrowerEmail = loan.borrower?.email?.toLowerCase() || ""
-        const search = searchQuery.toLowerCase()
+      const loanNumber = loan.loan_number?.toLowerCase() || ""
+      const borrowerName = getBorrowerName(loan.borrower).toLowerCase()
+      const borrowerEmail = loan.borrower?.email?.toLowerCase() || ""
+      const search = searchQuery.toLowerCase()
 
-        const matchesSearch = loanNumber.includes(search) || borrowerName.includes(search) || borrowerEmail.includes(search)
+      const matchesSearch = loanNumber.includes(search) || borrowerName.includes(search) || borrowerEmail.includes(search)
 
-        const matchesStatus = statusFilter === "all" || loan.status === statusFilter
-        const matchesType = typeFilter === "all" || loan.type === typeFilter
+      const matchesStatus = statusFilter === "all" || loan.status === statusFilter
+      const matchesType = typeFilter === "all" || loan.type === typeFilter
 
-        return matchesSearch && matchesStatus && matchesType
-      })
+      return matchesSearch && matchesStatus && matchesType
+    })
     : []
 
   const totalPages = Math.ceil(filteredLoans.length / itemsPerPage)
@@ -220,14 +220,6 @@ export default function LenderLoansPage() {
     approved: loans.filter((l) => l?.status === "approved").length,
     active: loans.filter((l) => l?.status === "active").length,
     completed: loans.filter((l) => l?.status === "completed").length,
-  }
-
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
   }
 
   const openUpdateModal = (loan: Loan, newStatus?: string) => {
@@ -320,20 +312,19 @@ export default function LenderLoansPage() {
   }
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <LenderSidebar />
+    <div className=" min-h-screen bg-background">
 
       <div className="flex-1">
         <div className="lg:hidden h-16" />
 
-        <header className="border-b border-border bg-card sticky top-0 z-10">
-          <div className="px-4 sm:px-6 py-4">
-            <h1 className="text-2xl font-bold">Loans</h1>
+                <header className=" border-b border-border bg-card">
+                    <div className="w-full flex flex-col px-4 sm:px-6 py-4 justify-between">
+            <h1 className="text-2xl font-semibold leading-tight">Loans</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage and track all loan applications</p>
           </div>
         </header>
 
-        <main className="p-4 sm:p-6 space-y-6">
+        <main className="p-4 sm:p-6">
           {error && (
             <Card className="p-4 border-destructive/30 bg-destructive/5">
               <div className="flex items-start gap-3">
@@ -506,10 +497,10 @@ export default function LenderLoansPage() {
                             <p className="font-medium">
                               {loan.created_at
                                 ? new Date(loan.created_at).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                    year: "numeric",
-                                  })
+                                  month: "short",
+                                  day: "numeric",
+                                  year: "numeric",
+                                })
                                 : "N/A"}
                             </p>
                           </div>
