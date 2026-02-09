@@ -824,12 +824,6 @@ const LoansManagementPage = () => {
                   <RefreshCw className="h-4 w-4" />
                   <span className="hidden sm:inline">Refresh</span>
                 </Button>
-
-                <Button onClick={() => (window.location.href = "/admin/loans/new")} className="flex items-center gap-2" size="sm">
-                  <PlusCircle className="h-4 w-4" />
-                  <span className="hidden sm:inline">New Loan</span>
-                  <span className="sm:hidden">New</span>
-                </Button>
               </div>
             </div>
           </div>

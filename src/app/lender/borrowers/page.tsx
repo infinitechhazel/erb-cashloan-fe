@@ -21,7 +21,6 @@ interface User {
 const UserManagementPage = () => {
   const [refresh, setRefresh] = useState(false)
 
-  // ✅ ADD THIS DEBUG EFFECT
 
   const handleRefresh = () => {
     setRefresh(!refresh)
